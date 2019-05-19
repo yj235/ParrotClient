@@ -1,6 +1,8 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+//git test
+
 #include "common.h"
 #include "login.h"
 #include "mainwindow.h"
