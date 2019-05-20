@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     login.cpp \
     mainwindow.cpp \
     common.cpp \
-    manager.cpp
+    manager.cpp \
+    mylineedit.cpp
 
 HEADERS  += widget.h \
     format.h \
@@ -32,7 +33,8 @@ HEADERS  += widget.h \
     login.h \
     mainwindow.h \
     common.h \
-    manager.h
+    manager.h \
+    mylineedit.h
 
 FORMS    += widget.ui \
     login.ui \

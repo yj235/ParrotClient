@@ -15,57 +15,63 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="label_name">
-         <property name="text">
-          <string>用户名</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit_name"/>
-       </item>
-      </layout>
+      <widget class="QLabel" name="label_name">
+       <property name="text">
+        <string>用户名</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_name">
+      <widget class="MyLineEdit" name="lineEdit_name"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_name_exist">
        <property name="text">
-        <string>用户名验证</string>
+        <string/>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_password">
-         <property name="text">
-          <string>密码</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="lineEdit_password"/>
-       </item>
-      </layout>
+      <widget class="QLabel" name="label_password">
+       <property name="text">
+        <string>密码</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_password">
+      <widget class="QLineEdit" name="lineEdit_password"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_password_incorrect">
        <property name="text">
-        <string>密码验证</string>
+        <string/>
        </property>
       </widget>
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>登录/使用此用户名注册</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>mylineedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

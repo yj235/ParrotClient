@@ -5,16 +5,16 @@
 #include "KVP.h"
 #include "format.h"
 
-#include "mainwindow.h"
-
 #include <QWidget>
 #include <QTcpSocket>
+#include <QString>
 
 #include <iostream>
 #include <string>
 
 #include <string.h>
 
+//填入顺序bug
 namespace Ui {
 class Login;
 }
@@ -28,18 +28,16 @@ public:
     ~Login();
 
 private slots:
-    void on_pushButton_login_clicked();
-
-    void logined(void);
-
     void on_pushButton_name_clicked();
-
     void on_pushButton_password_clicked();
+    void focus_out(void);
+    void receive_message(QString);
+
+    void on_pushButton_clicked();
 
 private:
     Ui::Login *ui;
 
-    MainWindow *mainWindow;
     void closeEvent(QCloseEvent *);
 };
 
