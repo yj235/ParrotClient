@@ -5,8 +5,15 @@
 #include "KVP.h"
 #include "format.h"
 
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+
+#include <string>
+
 #include <QWidget>
-#include <QMessageBox>
+#include <QString>
+#include <QStringList>
+#include <QStringListModel>
 
 namespace Ui {
 class MainWindow;
@@ -20,7 +27,15 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    QStringList contacts_list;
+    QStringListModel *contacts_list_model;
+
+public slots:
+    void recv_data(QString);
+
 private slots:
+    void contacts_list_select(QModelIndex index);
+
     void on_pushButton_send_clicked();
 
 private:

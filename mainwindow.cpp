@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "pdebug.h"
+#include <qdebug.h>
+
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -9,12 +12,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->listWidget_contacts->addItem(new QListWidgetItem("nb"));
+    ui->listView->setUpdatesEnabled(true);
+
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("query");
+    writer.String("contacts");
+    writer.EndObject();
+    string data = sb.GetString();
+    socket->write(data.c_str(), data.length());
+
+    contacts_list_model = new QStringListModel;
+    contacts_list_model->setStringList(contacts_list);
+    ui->listView->setModel(contacts_list_model);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::contacts_list_select(QModelIndex index)
+{
+    //qDebug() << index.data().toString();
 }
 
 void MainWindow::closeEvent(QCloseEvent *){
@@ -23,11 +44,22 @@ void MainWindow::closeEvent(QCloseEvent *){
 
 void MainWindow::on_pushButton_send_clicked()
 {
-    KVP *p1 = new KVP("send");
-    KVP *p2 = new KVP("nb", ui->lineEdit->text().toStdString());
-    p1->sub = p2;
-    string data;
-    format(data, p1);
-    delete p1;
-    socket->write(data.c_str(),data.length());
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("send");
+    writer.StartObject();
+    writer.Key("name");
+    writer.String(ui->listView->currentIndex().data().toString().toStdString().c_str());
+    writer.Key("data");
+    writer.String(ui->lineEdit->text().toStdString().c_str());
+    writer.EndObject();
+    writer.EndObject();
+    string data(sb.GetString());
+    socket->write(data.c_str(), data.length());
+}
+
+void MainWindow::recv_data(QString data)
+{
+    ui->textBrowser->append(data);
 }

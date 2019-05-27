@@ -4,6 +4,9 @@
 #include "common.h"
 #include "KVP.h"
 #include "format.h"
+#include "pdebug.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 #include <QWidget>
 #include <QTcpSocket>
