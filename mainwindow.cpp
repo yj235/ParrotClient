@@ -33,10 +33,10 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::contacts_list_select(QModelIndex index)
-{
-    //qDebug() << index.data().toString();
-}
+//void MainWindow::contacts_list_select(QModelIndex index)
+//{
+//    qDebug() << index.data().toString();
+//}
 
 void MainWindow::closeEvent(QCloseEvent *){
     socket->disconnectFromHost();
@@ -59,7 +59,10 @@ void MainWindow::on_pushButton_send_clicked()
     socket->write(data.c_str(), data.length());
 }
 
-void MainWindow::recv_data(QString data)
+void MainWindow::recv_from_manager(QString name, QString data)
 {
-    ui->textBrowser->append(data);
+    QDateTime time = QDateTime::currentDateTime();
+    QString time_str = time.toString("yyyy/M/d h:m:s");
+    ui->textBrowser->append(name + " " + time_str);
+    ui->textBrowser->append(data + "\n");
 }

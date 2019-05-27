@@ -23,18 +23,6 @@ void Login::closeEvent(QCloseEvent *)
     socket->disconnectFromHost();
 }
 
-void Login::on_pushButton_name_clicked()
-{
-    string data = "{query{name " + ui->lineEdit_name->text().toStdString() + "}}";
-    socket->write(data.c_str(), data.length());
-}
-
-void Login::on_pushButton_password_clicked()
-{
-    string data = "{query{password " + ui->lineEdit_password->text().toStdString() + "}}";
-    socket->write(data.c_str(), data.length());
-}
-
 void Login::focus_out()
 {
     if (ui->lineEdit_name->text().isEmpty()) {
@@ -52,18 +40,18 @@ void Login::focus_out()
     string data = sb.GetString();
     pdebug << data << endl;
     socket->write(data.c_str(), data.length());
-    //string data_2 = "{query{name " + ui->lineEdit_name->text().toStdString() + "}}";
-    //socket->write(data_2.c_str(), data_2.length());
 }
 
-void Login::receive_message(QString message)
+void Login::recv_from_manager(QString data)
 {
-    if ("name exist" == message) {
+    if ("name exist" == data) {
         ui->label_name_existence->setText("");
-    } else if ("name not exist" == message) {
-        ui->label_name_existence->setText(message);
-    } else if ("password incorrect" == message) {
-        ui->label_password_incorrect->setText(message);
+    } else if ("name not exist" == data) {
+        ui->label_name_existence->setText(data);
+    } else if ("password incorrect" == data) {
+        ui->label_password_incorrect->setText(data);
+    } else if ("regist failed" == data) {
+        ui->label_regist_failed->setText(data);
     }
 }
 
@@ -95,6 +83,4 @@ void Login::on_pushButton_clicked()
     string data = sb.GetString();
     pdebug << data << endl;
     socket->write(data.c_str(), data.length());
-    //string data = "{query{password " + ui->lineEdit_password->text().toStdString() + "}}";
-    //socket->write(data.c_str(), data.length());
 }

@@ -31,11 +31,8 @@ public:
     ~Login();
 
 private slots:
-    void on_pushButton_name_clicked();
-    void on_pushButton_password_clicked();
     void focus_out(void);
-    void receive_message(QString);
-
+    void recv_from_manager(QString);
     void on_pushButton_clicked();
 
 private:

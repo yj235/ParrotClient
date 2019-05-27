@@ -18,8 +18,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         widget.cpp \
-    format.cpp \
-    KVP.cpp \
     login.cpp \
     mainwindow.cpp \
     common.cpp \
@@ -28,8 +26,6 @@ SOURCES += main.cpp\
     user.cpp
 
 HEADERS  += widget.h \
-    format.h \
-    KVP.h \
     pdebug.h \
     login.h \
     mainwindow.h \

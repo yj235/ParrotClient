@@ -57,6 +57,13 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="label_regist_failed">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="pushButton">
      <property name="text">
       <string>登录/使用此用户名注册</string>

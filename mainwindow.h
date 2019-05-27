@@ -14,6 +14,7 @@
 #include <QString>
 #include <QStringList>
 #include <QStringListModel>
+#include <QDateTime>
 
 namespace Ui {
 class MainWindow;
@@ -31,11 +32,10 @@ public:
     QStringListModel *contacts_list_model;
 
 public slots:
-    void recv_data(QString);
+    void recv_from_manager(QString name, QString data);
 
 private slots:
     void contacts_list_select(QModelIndex index);
-
     void on_pushButton_send_clicked();
 
 private:

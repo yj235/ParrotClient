@@ -30,11 +30,11 @@ public:
     explicit Manager(QObject *parent = 0);
 
 signals:
-    void send_message(QString);
-    void recv_data(QString);
+    void send_to_login(QString);
+    void send_to_mainWindow(QString name, QString data);
 
 public slots:
-    void f(void);
+    void read(void);
 
 private:
     Login *login;
