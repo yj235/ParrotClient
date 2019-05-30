@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     common.cpp \
     manager.cpp \
     mylineedit.cpp \
-    user.cpp
+    user.cpp \
+    chatwindow.cpp
 
 HEADERS  += widget.h \
     pdebug.h \
@@ -68,8 +69,10 @@ HEADERS  += widget.h \
     rapidjson/schema.h \
     rapidjson/stream.h \
     rapidjson/stringbuffer.h \
-    rapidjson/writer.h
+    rapidjson/writer.h \
+    chatwindow.h
 
 FORMS    += widget.ui \
     login.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    chatwindow.ui

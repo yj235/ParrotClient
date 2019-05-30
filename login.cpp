@@ -11,6 +11,9 @@ Login::Login(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->lineEdit_name, SIGNAL(focus_out()), this, SLOT(focus_out()));
+    ui->pushButton->setShortcut(tr("return"));
+    shortcut_close = new QShortcut(QKeySequence(tr("ctrl+q")), this);
+    connect(shortcut_close, SIGNAL(activated()), this,SLOT(close()));
 }
 
 Login::~Login()

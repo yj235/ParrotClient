@@ -2,8 +2,6 @@
 #define LOGIN_H
 
 #include "common.h"
-#include "KVP.h"
-#include "format.h"
 #include "pdebug.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
@@ -11,6 +9,7 @@
 #include <QWidget>
 #include <QTcpSocket>
 #include <QString>
+#include <QShortcut>
 
 #include <iostream>
 #include <string>
@@ -37,6 +36,8 @@ private slots:
 
 private:
     Ui::Login *ui;
+
+    QShortcut *shortcut_close;
 
     void closeEvent(QCloseEvent *);
 };
