@@ -21,7 +21,7 @@
     <widget class="QTextEdit" name="textEdit"/>
    </item>
    <item row="1" column="1">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="pushButton_send">
      <property name="text">
       <string>发送</string>
      </property>

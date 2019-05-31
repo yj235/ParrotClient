@@ -13,6 +13,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include <queue>
 
 #include <QObject>
 #include <QTcpSocket>
@@ -36,6 +37,10 @@ signals:
     //发送至mainWindow的信息
     void send_to_mainWindow(unsigned int id, QString data);
 
+    //***临时***
+    //id_mq 在new ChatWindow后显示空
+    void chatWindow_show_historyMessage(void);
+
 public slots:
     //读取并分析来自服务器的信息
     void read(void);
@@ -43,6 +48,7 @@ public slots:
     void new_chatWindow(QModelIndex);
 
 private slots:
+    void chatWindow_close(unsigned int id);
 
 private:
     //Login窗口
@@ -51,9 +57,13 @@ private:
     MainWindow *mainWindow;
     //id_ChatWindow
     QMap<unsigned int, ChatWindow*> id_chatWindow;
+    //本地消息队列 id_queue;
+    //std::unordered_map<unsigned int, std::queue<std::string>> id_mq;
 
     //登录成功
     void login_successed(void);
+    //请求消息队列
+    void ask_for_message(void);
 };
 
 #endif // MANAGER_H

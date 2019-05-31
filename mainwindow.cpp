@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     writer.EndObject();
     string data = sb.GetString();
     socket->write(data.c_str(), data.length());
+    socket->flush();
 
     //延迟发送 有bug 两个json连一起了
     //delay();

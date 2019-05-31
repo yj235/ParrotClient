@@ -26,6 +26,8 @@ void Login::closeEvent(QCloseEvent *)
     socket->disconnectFromHost();
 }
 
+//用户名验证
+//失去焦点发送验证
 void Login::focus_out()
 {
     if (ui->lineEdit_name->text().isEmpty()) {
@@ -45,6 +47,7 @@ void Login::focus_out()
     socket->write(data.c_str(), data.length());
 }
 
+//从manager接收数据
 void Login::recv_from_manager(QString data)
 {
     if ("name exist" == data) {
@@ -58,6 +61,7 @@ void Login::recv_from_manager(QString data)
     }
 }
 
+//登录/注册
 void Login::on_pushButton_clicked()
 {
     if (ui->lineEdit_password->text().isEmpty()){

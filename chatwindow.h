@@ -12,6 +12,7 @@
 #include <QShortcut>
 #include <QDateTime>
 #include <QDebug>
+#include <QCloseEvent>
 
 namespace Ui {
 class ChatWindow;
@@ -25,12 +26,21 @@ public:
     unsigned int contacts_id;
 
     explicit ChatWindow(QWidget *parent = 0);
+    //ChatWindow(unsigned int id, QWidget *parent = 0) : contacts_id(id){}
     ~ChatWindow();
 
     void recv_data(std::string data);
 
+signals:
+    void close(unsigned int);
+
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private slots:
-    void on_pushButton_clicked();
+    void on_pushButton_send_clicked();
+
+    void showHistoryMessage(void);
 
 private:
     Ui::ChatWindow *ui;

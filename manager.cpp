@@ -1,5 +1,7 @@
 #include "manager.h"
 
+#include "widget.h"
+
 using namespace std;
 
 Manager::Manager(QObject *parent) : QObject(parent)
@@ -27,9 +29,24 @@ void Manager::login_successed(void){
     connect(this, SIGNAL(send_to_mainWindow(unsigned int,QString)), mainWindow, SLOT(recv_from_manager(unsigned int,QString)));
     //双击mainWindow的联系人列表,创建一个ChatWindow
     connect(mainWindow, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)), this, SLOT(new_chatWindow(QModelIndex)));
+    //请求消息队列
+    ask_for_message();
     if (login) {
         delete login;
     }
+}
+
+void Manager::ask_for_message()
+{
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("message");
+    writer.String("please");
+    writer.EndObject();
+    string data(sb.GetString());
+    socket->write(data.c_str(), data.length());
+    socket->flush();
 }
 
 //读取/解析/转发来自服务器的消息
@@ -45,15 +62,23 @@ void Manager::read()
     }
     if (doc.HasMember("send") && doc["send"].IsObject()) {
         const rapidjson::Value &object = doc["send"];
-        //string name(object["name"].GetString());
         unsigned id = object["id"].GetUint();
         string data(object["data"].GetString());
-        pdebug << id << " " << data << endl;
+        if (id_chatWindow.count(id)) {
+            pdebug << string("to chatWindow") << endl;
+            id_chatWindow[id]->recv_data(data);
+        } else {
+            pdebug << string("to mq") << endl;
+            id_mq[id].push(data);
+        }
+        //pdebug << id << " " << data << endl;
         //明天解决 改成队列
         //bug-->若不打开聊天窗口则挂掉
-        id_chatWindow[id]->recv_data(data);
+        //id_chatWindow[id]->recv_data(data);
+    //验证
     } else if (doc.HasMember("query") && doc["query"].IsObject()) {
         const rapidjson::Value &object = doc["query"];
+        //验证名子
         if (object.HasMember("name") && object["name"].IsString()) {
             if (string("exist") == object["name"].GetString()) {
                 pdebug << "name exist" << endl;
@@ -62,9 +87,11 @@ void Manager::read()
                 pdebug << "name not exist" << endl;
                 emit send_to_login("name not exist");
             }
+        //验证密码
         } else if (object.HasMember("password") && object["password"].IsString()) {
             if (string("correct") == object["password"].GetString()) {
                 pdebug << "password correct" << endl;
+                //登录成功
                 login_successed();
             } else if (string("incorrect") ==  object["password"].GetString()) {
                 pdebug << "password incorrect" << endl;
@@ -88,10 +115,12 @@ void Manager::read()
             mainWindow->group_list.append(QString::fromStdString(group_array[i].GetString()));
         }
         mainWindow->group_list_model->setStringList(mainWindow->group_list);
+        //注册
     } else if (doc.HasMember("regist") && doc["regist"].IsString()) {
         if (string("failed") == doc["regist"].GetString()) {
             emit send_to_login("regist failed");
         } else {
+            //注册成功
             login_successed();
         }
     }
@@ -103,10 +132,20 @@ void Manager::read()
 //新建聊天窗口
 void Manager::new_chatWindow(QModelIndex index)
 {
-    ChatWindow *chatWindow = new ChatWindow();
-    chatWindow->contacts_id = mainWindow->name_id[index.data().toString().toStdString()];
-    //chatWindow->contacts = index.data().toString();
-    //name_chatWindow[index.data().toString()] = chatWindow;
-    id_chatWindow[chatWindow->contacts_id] = chatWindow;
+    unsigned int id = mainWindow->name_id[index.data().toString().toStdString()];
+    //!!!有问题没解决 ChatWindow构造函数
+    ChatWindow *chatWindow = new ChatWindow;
+    connect(this, SIGNAL(chatWindow_show_historyMessage()), chatWindow, SLOT(showHistoryMessage()));
+    chatWindow->contacts_id = id;
+    //ChatWindow *chatWindow = new ChatWindow(id);
+    connect(chatWindow, SIGNAL(close(uint)), this, SLOT(chatWindow_close(uint)));
+    chatWindow->setAttribute(Qt::WA_DeleteOnClose);
+    id_chatWindow[id] = chatWindow;
     chatWindow->show();
+    emit chatWindow_show_historyMessage();
+}
+
+void Manager::chatWindow_close(unsigned int id)
+{
+    id_chatWindow.remove(id);
 }
