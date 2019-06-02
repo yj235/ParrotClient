@@ -22,7 +22,8 @@ ChatWindow::ChatWindow(QWidget *parent) :
     //改用manager 发送信号
     while (!id_mq[contacts_id].empty()) {
         qDebug() << "inside";
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front()));
+        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().time));
+        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().message));
         id_mq[contacts_id].pop();
     }
 }
@@ -32,13 +33,10 @@ ChatWindow::~ChatWindow()
     delete ui;
 }
 
-void ChatWindow::recv_data(string data)
+void ChatWindow::recv_data(string time, string message)
 {
-    //时间要改
-    QDateTime time = QDateTime::currentDateTime();
-    QString time_str = time.toString("yyyy/M/d h:m:s");
-    ui->textBrowser->append(time_str);
-    ui->textBrowser->append(QString::fromStdString(data) + "\n");
+    ui->textBrowser->append(QString::fromStdString(time));
+    ui->textBrowser->append(QString::fromStdString(message) + "\n");
 }
 
 void ChatWindow::closeEvent(QCloseEvent *event)
@@ -49,6 +47,9 @@ void ChatWindow::closeEvent(QCloseEvent *event)
 
 void ChatWindow::on_pushButton_send_clicked()
 {
+    if (ui->textEdit->toPlainText().isEmpty()) {
+        return;
+    }
     rapidjson::StringBuffer sb;
     rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
     writer.StartObject();
@@ -56,19 +57,27 @@ void ChatWindow::on_pushButton_send_clicked()
     writer.StartObject();
     writer.Key("id");
     writer.Uint(contacts_id);
-    writer.Key("data");
+    writer.Key("time");
+    QDateTime time = QDateTime::currentDateTime();
+    QString time_str = time.toString("yyyy/M/d h:m:s");
+    writer.String(time_str.toStdString().c_str());
+    writer.Key("message");
     writer.String(ui->textEdit->toPlainText().toStdString().c_str());
-    ui->textEdit->clear();
     writer.EndObject();
     writer.EndObject();
     string data(sb.GetString());
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
+    ui->textBrowser->append(time_str);
+    ui->textBrowser->append(ui->textEdit->toPlainText() + "\n");
+    ui->textEdit->clear();
 }
 
 void ChatWindow::showHistoryMessage()
 {
     while (!id_mq[contacts_id].empty()) {
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front()));
+        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().time));
+        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().message) + "\n");
         id_mq[contacts_id].pop();
     }
 }

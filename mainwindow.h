@@ -45,6 +45,9 @@ signals:
     //转发信号 双击联系人列表 转发至manager
    void double_clicked_on_contacts_list_view(QModelIndex);
 
+   //***test***
+   void ask_for_history_message_button(void);
+
 private slots:
     //从manager获取信息
     void recv_from_manager(unsigned int id, QString data);
@@ -56,6 +59,8 @@ private slots:
 
     //获取联系人列表
     void on_pushButton_getGroupList_clicked();
+
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

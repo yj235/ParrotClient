@@ -29,7 +29,7 @@ public:
     //ChatWindow(unsigned int id, QWidget *parent = 0) : contacts_id(id){}
     ~ChatWindow();
 
-    void recv_data(std::string data);
+    void recv_data(std::string time, std::string message);
 
 signals:
     void close(unsigned int);

@@ -27,7 +27,10 @@ class Manager : public QObject
 {
     Q_OBJECT
 public:
+    //没用?
     std::vector<User> vu;
+    //MainWindow窗口
+    MainWindow *mainWindow;
 
     explicit Manager(QObject *parent = 0);
 
@@ -50,11 +53,12 @@ public slots:
 private slots:
     void chatWindow_close(unsigned int id);
 
+    //***test***
+    void ask_for_history_message_button(void);
+
 private:
     //Login窗口
     Login *login;
-    //MainWindow窗口
-    MainWindow *mainWindow;
     //id_ChatWindow
     QMap<unsigned int, ChatWindow*> id_chatWindow;
     //本地消息队列 id_queue;
@@ -64,6 +68,8 @@ private:
     void login_successed(void);
     //请求消息队列
     void ask_for_message(void);
+    //转换函数
+    void my_parse(char *data);
 };
 
 #endif // MANAGER_H

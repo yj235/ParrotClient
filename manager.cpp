@@ -2,13 +2,16 @@
 
 #include "widget.h"
 
+#define IP "192.168.196.171"
+#define MAXSIZE 1024
+
 using namespace std;
 
 Manager::Manager(QObject *parent) : QObject(parent)
 {
     //建立连接
     socket = new QTcpSocket();
-    socket->connectToHost("192.168.196.170", 8080);
+    socket->connectToHost(IP, 8080);
 
     //连接 socket_readyRead to read
     connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
@@ -29,13 +32,18 @@ void Manager::login_successed(void){
     connect(this, SIGNAL(send_to_mainWindow(unsigned int,QString)), mainWindow, SLOT(recv_from_manager(unsigned int,QString)));
     //双击mainWindow的联系人列表,创建一个ChatWindow
     connect(mainWindow, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)), this, SLOT(new_chatWindow(QModelIndex)));
-    //请求消息队列
-    ask_for_message();
+    //请求历史消息
+    //ask_for_message();
+
+    //***test***
+    connect(mainWindow, SIGNAL(ask_for_history_message_button()), this, SLOT(ask_for_history_message_button()));
+
     if (login) {
         delete login;
     }
 }
 
+//请求历史消息
 void Manager::ask_for_message()
 {
     rapidjson::StringBuffer sb;
@@ -45,16 +53,14 @@ void Manager::ask_for_message()
     writer.String("please");
     writer.EndObject();
     string data(sb.GetString());
-    socket->write(data.c_str(), data.length());
-    socket->flush();
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
+    //socket->flush();
 }
 
-//读取/解析/转发来自服务器的消息
-void Manager::read()
+//解析/转发来自服务器的消息
+void Manager::my_parse(char *data)
 {
-    char data[64] = {0};
-    socket->read(data, sizeof(data));
-    pdebug << data << endl;
     rapidjson::Document doc;
     if (doc.Parse(data).HasParseError()) {
         pdebug << "json parse error" << endl;
@@ -63,18 +69,15 @@ void Manager::read()
     if (doc.HasMember("send") && doc["send"].IsObject()) {
         const rapidjson::Value &object = doc["send"];
         unsigned id = object["id"].GetUint();
-        string data(object["data"].GetString());
+        string time(object["time"].GetString());
+        string message(object["message"].GetString());
         if (id_chatWindow.count(id)) {
             pdebug << string("to chatWindow") << endl;
-            id_chatWindow[id]->recv_data(data);
+            id_chatWindow[id]->recv_data(time, message);
         } else {
             pdebug << string("to mq") << endl;
-            id_mq[id].push(data);
+            id_mq[id].push({time, message});
         }
-        //pdebug << id << " " << data << endl;
-        //明天解决 改成队列
-        //bug-->若不打开聊天窗口则挂掉
-        //id_chatWindow[id]->recv_data(data);
     //验证
     } else if (doc.HasMember("query") && doc["query"].IsObject()) {
         const rapidjson::Value &object = doc["query"];
@@ -129,15 +132,34 @@ void Manager::read()
     }
 }
 
+//读取来自服务器的消息
+void Manager::read()
+{
+    unsigned int len = 0;
+    while (socket->read((char*)&len, sizeof(len)) > 0) {
+        char data[MAXSIZE] = {0};
+        socket->read(data, len);
+        pdebug << data << endl;
+        my_parse(data);
+    }
+}
+
 //新建聊天窗口
 void Manager::new_chatWindow(QModelIndex index)
 {
     unsigned int id = mainWindow->name_id[index.data().toString().toStdString()];
+    if (id_chatWindow.count(id)) {
+        id_chatWindow[id]->raise();
+        return;
+    }
+
     //!!!有问题没解决 ChatWindow构造函数
     ChatWindow *chatWindow = new ChatWindow;
     connect(this, SIGNAL(chatWindow_show_historyMessage()), chatWindow, SLOT(showHistoryMessage()));
     chatWindow->contacts_id = id;
     //ChatWindow *chatWindow = new ChatWindow(id);
+
+    //chatWindow关闭后从id_chatWindow中移除
     connect(chatWindow, SIGNAL(close(uint)), this, SLOT(chatWindow_close(uint)));
     chatWindow->setAttribute(Qt::WA_DeleteOnClose);
     id_chatWindow[id] = chatWindow;
@@ -148,4 +170,10 @@ void Manager::new_chatWindow(QModelIndex index)
 void Manager::chatWindow_close(unsigned int id)
 {
     id_chatWindow.remove(id);
+}
+
+//***test***
+void Manager::ask_for_history_message_button()
+{
+    ask_for_message();
 }

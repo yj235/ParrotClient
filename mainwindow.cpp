@@ -23,9 +23,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //设置联系人列表只读
     ui->listView_contacts->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    //设置群列表只读
+    ui->listView_group->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     //设置联系人列表刷新
     ui->listView_contacts->setUpdatesEnabled(true);
+    //设置群列表刷新
+    ui->listView_group->setUpdatesEnabled(true);
 
     //请求联系人列表
     rapidjson::StringBuffer sb;
@@ -35,7 +39,8 @@ MainWindow::MainWindow(QWidget *parent) :
     writer.String("contacts");
     writer.EndObject();
     string data = sb.GetString();
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
     socket->flush();
 
     //延迟发送 有bug 两个json连一起了
@@ -104,7 +109,8 @@ void MainWindow::on_pushButton_send_clicked()
     writer.EndObject();
     writer.EndObject();
     string data(sb.GetString());
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
 }
 
 //点击联系人后焦点到文本编辑器
@@ -134,5 +140,11 @@ void MainWindow::on_pushButton_getGroupList_clicked()
     writer.String("group");
     writer.EndObject();
     string data = sb.GetString();
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    emit ask_for_history_message_button();
 }

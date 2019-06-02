@@ -44,7 +44,8 @@ void Login::focus_out()
     writer.EndObject();
     string data = sb.GetString();
     pdebug << data << endl;
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
 }
 
 //从manager接收数据
@@ -89,5 +90,6 @@ void Login::on_pushButton_clicked()
     writer.EndObject();
     string data = sb.GetString();
     pdebug << data << endl;
-    socket->write(data.c_str(), data.length());
+    //socket->write(data.c_str(), data.length());
+    socket_write(data);
 }

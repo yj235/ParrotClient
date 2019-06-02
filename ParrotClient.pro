@@ -76,3 +76,6 @@ FORMS    += widget.ui \
     login.ui \
     mainwindow.ui \
     chatwindow.ui
+
+DISTFILES += \
+    TheFile
