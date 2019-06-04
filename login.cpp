@@ -32,6 +32,9 @@ void Login::focus_out()
 {
     if (ui->lineEdit_name->text().isEmpty()) {
         return;
+    } else if (ui->lineEdit_name->text().contains(" ")) {
+        ui->label_name_existence->setText("space not allowed");
+        return;
     }
     StringBuffer sb;
     Writer<StringBuffer> writer(sb);
@@ -43,7 +46,6 @@ void Login::focus_out()
     writer.EndObject();
     writer.EndObject();
     string data = sb.GetString();
-    pdebug << data << endl;
     //socket->write(data.c_str(), data.length());
     socket_write(data);
 }
@@ -66,7 +68,10 @@ void Login::recv_from_manager(QString data)
 void Login::on_pushButton_clicked()
 {
     if (ui->lineEdit_password->text().isEmpty()){
-        ui->label_password_incorrect->setText("密码不能为空");
+        ui->label_password_incorrect->setText("please input something");
+        return;
+    } else if (ui->lineEdit_password->text().contains(" ")) {
+        ui->label_password_incorrect->setText("space not allowed");
         return;
     }
     StringBuffer sb;
@@ -89,7 +94,5 @@ void Login::on_pushButton_clicked()
     }
     writer.EndObject();
     string data = sb.GetString();
-    pdebug << data << endl;
-    //socket->write(data.c_str(), data.length());
     socket_write(data);
 }

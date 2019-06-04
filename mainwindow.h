@@ -9,6 +9,7 @@
 #include <string>
 #include <unordered_map>
 #include <map>
+#include <algorithm>
 
 #include <QWidget>
 #include <QString>
@@ -16,6 +17,7 @@
 #include <QStringListModel>
 #include <QDateTime>
 #include <QShortcut>
+#include <QMessageBox>
 
 namespace Ui {
 class MainWindow;
@@ -34,33 +36,45 @@ public:
     QStringList group_list;
     //群列表模型
     QStringListModel *group_list_model;
-
-    //联系人name_id;
-    std::map<std::string, unsigned int> name_id;
+    //联系人map<name_id>
+    std::unordered_map<std::string, unsigned int> name_id;
+    //联系人map<name_id>
+    //替换中...
+    std::unordered_map<std::string, unsigned int> contacts_name_id;
+    //群map<name_id>
+    std::unordered_map<std::string, unsigned int> group_name_id;
+    //联系人vector<id>
+    std::vector<unsigned int> vector_id;
+    //联系人vector<id>
+    //替换中
+    std::vector<unsigned int> contacts_vector_id;
+    //群vector<id>
+    std::vector<unsigned int> group_vector_id;
+    //搜索用户id
+    unsigned int contacts_search_id;
+    //搜索群id
+    unsigned int group_search_id;
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 signals:
-    //转发信号 双击联系人列表 转发至manager
-   void double_clicked_on_contacts_list_view(QModelIndex);
+    //转发信号至manager 双击联系人列表->创建聊天窗口
+    void double_clicked_on_contacts_list_view(QModelIndex);
+    //转发信号至manager 双击群列表->创建聊天窗口
+    void double_clicked_on_group_list_view(QModelIndex);
 
-   //***test***
-   void ask_for_history_message_button(void);
+public slots:
+    void query_contacts_list(void);
+    void query_group_list(void);
 
 private slots:
     //从manager获取信息
-    void recv_from_manager(unsigned int id, QString data);
-    //发送信息
-    void on_pushButton_send_clicked();
-    //联系人ListView单击(信号)->焦点至文本编辑器(槽)
-    //void contacts_clicked(QModelIndex);
-    //void group_clicked(QModelIndex);
+    //void recv_from_manager(unsigned int id, QString data);
 
-    //获取联系人列表
-    void on_pushButton_getGroupList_clicked();
+    void on_pushButton_searchContacts_clicked();
 
-    void on_pushButton_clicked();
+    void on_pushButton_searchGroup_clicked();
 
 private:
     Ui::MainWindow *ui;

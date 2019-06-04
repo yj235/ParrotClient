@@ -8,6 +8,7 @@
 #include "pdebug.h"
 #include "user.h"
 #include "rapidjson/document.h"
+#include "groupwindow.h"
 
 #include <string>
 #include <sstream>
@@ -22,6 +23,7 @@
 #include <QDebug>
 #include <QModelIndex>
 #include <QMap>
+#include <QMessageBox>
 
 class Manager : public QObject
 {
@@ -38,31 +40,31 @@ signals:
     //发送至login的信息
     void send_to_login(QString);
     //发送至mainWindow的信息
-    void send_to_mainWindow(unsigned int id, QString data);
+    //void send_to_mainWindow(unsigned int id, QString data);
 
     //***临时***
     //id_mq 在new ChatWindow后显示空
     void chatWindow_show_historyMessage(void);
 
 public slots:
-    //读取并分析来自服务器的信息
+    //读取来自服务器的信息
     void read(void);
     //创建聊天窗口
     void new_chatWindow(QModelIndex);
+    //创建群窗口
+    void new_groupWindow(QModelIndex index);
 
 private slots:
+    //聊天窗口关闭处理
+    //移除id_chatWindow
     void chatWindow_close(unsigned int id);
-
-    //***test***
-    void ask_for_history_message_button(void);
 
 private:
     //Login窗口
     Login *login;
     //id_ChatWindow
     QMap<unsigned int, ChatWindow*> id_chatWindow;
-    //本地消息队列 id_queue;
-    //std::unordered_map<unsigned int, std::queue<std::string>> id_mq;
+    QMap<unsigned int, GroupWindow*> id_groupWindow;
 
     //登录成功
     void login_successed(void);

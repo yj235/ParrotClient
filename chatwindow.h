@@ -26,6 +26,7 @@ public:
     unsigned int contacts_id;
 
     explicit ChatWindow(QWidget *parent = 0);
+    //有问题
     //ChatWindow(unsigned int id, QWidget *parent = 0) : contacts_id(id){}
     ~ChatWindow();
 
