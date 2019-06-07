@@ -65,6 +65,11 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::setID(unsigned int id)
+{
+    ui->label_myID->setText("my id:" + QString::number(id));
+}
+
 //请求联系人列表
 void MainWindow::query_contacts_list()
 {
@@ -135,8 +140,27 @@ void MainWindow::on_pushButton_searchGroup_clicked()
     writer.Key("search");
     writer.String("group");
     writer.Key("id");
+    writer.Uint(ID);
+    writer.Key("group id");
     writer.Uint(group_search_id);
     //writer.String(ui->lineEdit_searchContacts->text().toStdString().c_str());
+    writer.EndObject();
+    string data(sb.GetString());
+    socket_write(data);
+}
+
+void MainWindow::on_pushButton_createGroup_clicked()
+{
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("create group");
+    writer.StartObject();
+    writer.Key("id");
+    writer.Uint(ID);
+    writer.Key("name");
+    writer.String(ui->lineEdit_groupName->text().toStdString().c_str());
+    writer.EndObject();
     writer.EndObject();
     string data(sb.GetString());
     socket_write(data);

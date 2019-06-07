@@ -157,6 +157,7 @@ void Manager::my_parse(char *data)
     //} else if (doc["query id"].GetString() == string("id")) {
     } else if (doc.HasMember("query id")) {
         ID = doc["query id"].GetUint();
+        mainWindow->setID(ID);
     } else if (doc.HasMember("send group") && doc["send group"].IsObject()) {
         const rapidjson::Value &object = doc["send group"];
         unsigned int group_id = object["group id"].GetUint();
@@ -165,6 +166,23 @@ void Manager::my_parse(char *data)
         string time = object["time"].GetString();
         string message = object["message"].GetString();
         id_groupWindow[group_id]->recv_data(name, time, message);
+    } else if (doc.HasMember("create group")) {
+        const rapidjson::Value &object = doc["create group"];
+        unsigned int group_id = object["group id"].GetUint();
+        string group_name = object["group name"].GetString();
+        mainWindow->group_vector_id.push_back(object["group id"].GetUint());
+        mainWindow->group_name_id[group_name] = group_id;
+        mainWindow->group_list.append(QString::fromStdString(group_name));
+        mainWindow->group_list_model->setStringList(mainWindow->group_list);
+    } else if (doc.HasMember("new member")) {
+        const rapidjson::Value &object = doc["new member"];
+        unsigned int group_id = object["group id"].GetUint();
+        unsigned int id = object["id"].GetUint();
+        string name = object["name"].GetString();
+        //id_groupWindow[group_id]->id_name[object2["id"].GetUint()] = object2["name"].GetString();
+        id_groupWindow[group_id]->id_name[id] = name;
+        id_groupWindow[group_id]->member_list.append(QString::fromStdString(name));
+        id_groupWindow[group_id]->model->setStringList(id_groupWindow[group_id]->member_list);
     }
     else {
         pdebug << "other" << endl;
@@ -259,6 +277,7 @@ void Manager::new_groupWindow(QModelIndex index)
     id_groupWindow[id] = groupWindow;
     //groupWindow关闭后从id_chatWindow中移除
     connect(groupWindow, SIGNAL(close(uint)), this, SLOT(groupWindow_close(uint)));
+    groupWindow->setID(id);
     groupWindow->show();
     //emit groupWindow->open();
     groupWindow->open();

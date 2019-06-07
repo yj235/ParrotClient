@@ -66,6 +66,11 @@ void GroupWindow::recv_data(string name, string time, string message)
     ui->textBrowser->append(QString::fromStdString(message + "\n"));
 }
 
+void GroupWindow::setID(unsigned int group_id)
+{
+    ui->label_groupID->setText("group ID" + QString::number(group_id));
+}
+
 void GroupWindow::closeEvent(QCloseEvent *event)
 {
     rapidjson::StringBuffer sb;

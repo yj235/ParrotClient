@@ -42,7 +42,6 @@ public:
     //替换中...
     std::unordered_map<std::string, unsigned int> contacts_name_id;
 
-    //替换为group_id_name
     //群map<name_id>
     std::unordered_map<std::string, unsigned int> group_name_id;
     //群map<id_name>
@@ -64,6 +63,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void setID(unsigned int id);
+
 signals:
     //转发信号至manager 双击联系人列表->创建聊天窗口
     void double_clicked_on_contacts_list_view(QModelIndex);
@@ -81,6 +82,8 @@ private slots:
     void on_pushButton_searchContacts_clicked();
 
     void on_pushButton_searchGroup_clicked();
+
+    void on_pushButton_createGroup_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -40,6 +40,7 @@ public:
     void init(void);
     void open(void);
     void recv_data(std::string name, std::string time, std::string message);
+    void setID(unsigned int group_id);
 
 signals:
     void close(unsigned int);
