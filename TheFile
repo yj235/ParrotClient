@@ -1,5 +1,6 @@
 ***task***
 close mainWindow quit
+delete on close
 
 ***question***
 ChatWindow Manager MainWindow 三者结构

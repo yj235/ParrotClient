@@ -41,8 +41,13 @@ public:
     //联系人map<name_id>
     //替换中...
     std::unordered_map<std::string, unsigned int> contacts_name_id;
+
+    //替换为group_id_name
     //群map<name_id>
     std::unordered_map<std::string, unsigned int> group_name_id;
+    //群map<id_name>
+    std::unordered_map<unsigned int, std::string> groupID_name;
+
     //联系人vector<id>
     std::vector<unsigned int> vector_id;
     //联系人vector<id>
@@ -50,6 +55,7 @@ public:
     std::vector<unsigned int> contacts_vector_id;
     //群vector<id>
     std::vector<unsigned int> group_vector_id;
+
     //搜索用户id
     unsigned int contacts_search_id;
     //搜索群id

@@ -32,6 +32,10 @@ public:
 
     void recv_data(std::string time, std::string message);
 
+    void open(void);
+
+public slots:
+
 signals:
     void close(unsigned int);
 

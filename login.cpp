@@ -39,14 +39,13 @@ void Login::focus_out()
     StringBuffer sb;
     Writer<StringBuffer> writer(sb);
     writer.StartObject();
-    writer.Key("query");
+    writer.Key("query name");
     writer.StartObject();
     writer.Key("name");
     writer.String(ui->lineEdit_name->text().toStdString().c_str());
     writer.EndObject();
     writer.EndObject();
     string data = sb.GetString();
-    //socket->write(data.c_str(), data.length());
     socket_write(data);
 }
 
@@ -67,8 +66,11 @@ void Login::recv_from_manager(QString data)
 //登录/注册
 void Login::on_pushButton_clicked()
 {
+    if (ui->lineEdit_name->text().isEmpty()) {
+        return;
+    }
     if (ui->lineEdit_password->text().isEmpty()){
-        ui->label_password_incorrect->setText("please input something");
+        ui->label_password_incorrect->setText("please input password");
         return;
     } else if (ui->lineEdit_password->text().contains(" ")) {
         ui->label_password_incorrect->setText("space not allowed");
@@ -86,7 +88,7 @@ void Login::on_pushButton_clicked()
         writer.String(ui->lineEdit_password->text().toStdString().c_str());
         writer.EndObject();
     } else {
-        writer.Key("query");
+        writer.Key("query password");
         writer.StartObject();
         writer.Key("password");
         writer.String(ui->lineEdit_password->text().toStdString().c_str());

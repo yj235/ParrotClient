@@ -43,8 +43,13 @@ signals:
     //void send_to_mainWindow(unsigned int id, QString data);
 
     //***临时***
-    //id_mq 在new ChatWindow后显示空
+    //user_mq 在new ChatWindow后显示空
     void chatWindow_show_historyMessage(void);
+    //new ChatWindow后发送信号
+    void chatWindow_open(void);
+    //group_mq 在new GroupWindow后显示空
+    void groupWindow_show_historyMessage(void);
+    void GroupWindow_open(void);
 
 public slots:
     //读取来自服务器的信息
@@ -57,7 +62,10 @@ public slots:
 private slots:
     //聊天窗口关闭处理
     //移除id_chatWindow
-    void chatWindow_close(unsigned int id);
+    void chatWindow_close(unsigned int chatWindow_id);
+    //群窗口关闭处理
+    //移除id_groupWindow
+    void groupWindow_close(unsigned int groupWindow_id);
 
 private:
     //Login窗口
@@ -72,6 +80,8 @@ private:
     void ask_for_message(void);
     //转换函数
     void my_parse(char *data);
+    //请求id
+    void query_id(void);
 };
 
 #endif // MANAGER_H

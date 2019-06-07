@@ -1,9 +1,16 @@
 #include "common.h"
 
+//ID
+unsigned int ID;
+
+//socket
 QTcpSocket *socket;
 
-//本地消息队列 id_queue;
-std::unordered_map<unsigned int, std::queue<Time_Message>> id_mq;
+//本地用户消息队列;
+std::unordered_map<unsigned int, std::queue<Time_Message>> contacts_mq;
+
+//本地群消息队列
+std::unordered_map<unsigned int, std::queue<ID_Time_Message>> group_mq;
 
 void socket_write(const std::string &str){
     unsigned int len = str.length();

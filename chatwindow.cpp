@@ -18,14 +18,15 @@ ChatWindow::ChatWindow(QWidget *parent) :
     //发送快捷键
     ui->pushButton_send->setShortcut(tr("ctrl+return"));
 
-    //迷... new chatwindow 后id_mq为空
+    //迷... new chatwindow 后contacts_mq为空
     //改用manager 发送信号
-    while (!id_mq[contacts_id].empty()) {
-        qDebug() << "inside";
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().time));
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().message));
-        id_mq[contacts_id].pop();
-    }
+    //new chatWiindow 后 后续工作未完成
+    //while (!contacts_mq[contacts_id].empty()) {
+    //    qDebug() << "inside";
+    //    ui->textBrowser->append(QString::fromStdString(contacts_mq[contacts_id].front().time));
+    //    ui->textBrowser->append(QString::fromStdString(contacts_mq[contacts_id].front().message));
+    //    contacts_mq[contacts_id].pop();
+    //}
 }
 
 ChatWindow::~ChatWindow()
@@ -41,8 +42,20 @@ void ChatWindow::recv_data(string time, string message)
 
 void ChatWindow::closeEvent(QCloseEvent *event)
 {
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("contacts window close");
+    writer.StartObject();
+    writer.Key("id");
+    writer.Uint(ID);
+    writer.Key("contacts_id");
+    writer.Uint(contacts_id);
+    writer.EndObject();
+    writer.EndObject();
+    string data(sb.GetString());
+    socket_write(data);
     emit close(this->contacts_id);
-
 }
 
 void ChatWindow::on_pushButton_send_clicked()
@@ -66,7 +79,6 @@ void ChatWindow::on_pushButton_send_clicked()
     writer.EndObject();
     writer.EndObject();
     string data(sb.GetString());
-    //socket->write(data.c_str(), data.length());
     socket_write(data);
     ui->textBrowser->append(time_str);
     ui->textBrowser->append(ui->textEdit->toPlainText() + "\n");
@@ -75,9 +87,26 @@ void ChatWindow::on_pushButton_send_clicked()
 
 void ChatWindow::showHistoryMessage()
 {
-    while (!id_mq[contacts_id].empty()) {
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().time));
-        ui->textBrowser->append(QString::fromStdString(id_mq[contacts_id].front().message) + "\n");
-        id_mq[contacts_id].pop();
+    while (!contacts_mq[contacts_id].empty()) {
+        ui->textBrowser->append(QString::fromStdString(contacts_mq[contacts_id].front().time));
+        ui->textBrowser->append(QString::fromStdString(contacts_mq[contacts_id].front().message) + "\n");
+        contacts_mq[contacts_id].pop();
     }
+}
+
+void ChatWindow::open()
+{
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("contacts window open");
+    writer.StartObject();
+    writer.Key("id");
+    writer.Uint(ID);
+    writer.Key("contacts_id");
+    writer.Uint(contacts_id);
+    writer.EndObject();
+    writer.EndObject();
+    string data(sb.GetString());
+    socket_write(data);
 }
