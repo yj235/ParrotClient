@@ -110,3 +110,26 @@ void ChatWindow::open()
     string data(sb.GetString());
     socket_write(data);
 }
+
+void ChatWindow::on_pushButton_clicked()
+{
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    writer.StartObject();
+    writer.Key("file transfer to");
+    writer.Uint(contacts_id);
+    writer.EndObject();
+    string data(sb.GetString());
+    socket_write(data);
+
+    QString fileName = QFileDialog::getOpenFileName(this);
+    qDebug() << fileName;
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    int index = fileName.lastIndexOf("/");
+    QString fileName_shorter = fileName.right(fileName.length() - index - 1);
+    QByteArray content = file.readAll();
+    QByteArray header;
+    QDataStream stream(&header, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_4_8);
+}

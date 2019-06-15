@@ -2,7 +2,7 @@
 
 #include "widget.h"
 
-#define IP "192.168.196.174"
+#define IP "192.168.196.177"
 #define MAXSIZE 1024
 
 using namespace std;
@@ -183,6 +183,9 @@ void Manager::my_parse(char *data)
         id_groupWindow[group_id]->id_name[id] = name;
         id_groupWindow[group_id]->member_list.append(QString::fromStdString(name));
         id_groupWindow[group_id]->model->setStringList(id_groupWindow[group_id]->member_list);
+    } else if (doc.HasMember("file transfer conform")){
+        unsigned int id = doc["id"].GetUint();
+        pdebug << id << endl;
     }
     else {
         pdebug << "other" << endl;

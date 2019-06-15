@@ -13,6 +13,10 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QCloseEvent>
+#include <QFileDialog>
+#include <QFile>
+#include <QByteArray>
+#include <QTcpSocket>
 
 namespace Ui {
 class ChatWindow;
@@ -46,6 +50,8 @@ private slots:
     void on_pushButton_send_clicked();
 
     void showHistoryMessage(void);
+
+    void on_pushButton_clicked();
 
 private:
     Ui::ChatWindow *ui;
