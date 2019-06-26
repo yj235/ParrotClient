@@ -2,7 +2,8 @@
 
 #include "widget.h"
 
-#define IP "192.168.196.177"
+//#define IP "47.240.38.14"
+#define IP "192.168.0.106"
 #define MAXSIZE 1024
 
 using namespace std;
@@ -11,7 +12,7 @@ Manager::Manager(QObject *parent) : QObject(parent)
 {
     //建立连接
     socket = new QTcpSocket();
-    socket->connectToHost(IP, 8080);
+    socket->connectToHost(IP, 12345);
 
     //连接 socket_readyRead to read
     connect(socket, SIGNAL(readyRead()), this, SLOT(read()));
@@ -19,6 +20,7 @@ Manager::Manager(QObject *parent) : QObject(parent)
     //显示登录窗
     login = new Login();
     login->show();
+    connect(socket, SIGNAL(connected()), login, SLOT(connected()));
 
     //manager 与 login 通信
     connect(this, SIGNAL(send_to_login(QString)), login, SLOT(recv_from_manager(QString)));
@@ -63,13 +65,10 @@ void Manager::my_parse(char *data)
     } else if (doc.HasMember("query") && doc["query"].IsObject()) {
         const rapidjson::Value &object = doc["query"];
         //验证姓名
-        if (object.HasMember("name") && object["name"].IsString()) {
-            //if (string("exist") == object["name"].GetString()) {
+        if (object.HasMember("name")) {
             if (object["name"].IsUint()) {
                 emit send_to_login("name exist");
-            //} else if (string("not exist") == object["name"].GetString()) {
             } else if (object["name"].IsNull()) {
-                pdebug << "name not exist" << endl;
                 emit send_to_login("name not exist");
             }
             //验证密码
@@ -82,12 +81,12 @@ void Manager::my_parse(char *data)
                 emit send_to_login("password incorrect");
             }
         }
-    //} else if (doc.HasMember("query name")) {
-    //    if (doc["query name"].IsNull()) {
-    //        emit send_to_login("name not exist");
-    //    } else {
-    //        emit send_to_login("name exist");
-    //    }
+        //} else if (doc.HasMember("query name")) {
+        //    if (doc["query name"].IsNull()) {
+        //        emit send_to_login("name not exist");
+        //    } else {
+        //        emit send_to_login("name exist");
+        //    }
         //联系人列表
     } else if (doc.HasMember("contacts list") && doc["contacts list"].IsArray()) {
         const rapidjson::Value &contacts_array = doc["contacts list"];
@@ -131,7 +130,7 @@ void Manager::my_parse(char *data)
                 mainWindow->contacts_list.append(QString::fromStdString(doc["name"].GetString()));
                 mainWindow->contacts_list_model->setStringList(mainWindow->contacts_list);
             }
-        //查找群
+            //查找群
         } else if (doc["search"].GetString() == string("group")){
             if (doc["name"].GetString() == string("not exist")) {
                 QMessageBox msgBox;
@@ -154,7 +153,7 @@ void Manager::my_parse(char *data)
             id_groupWindow[group_id]->member_list.append(QString::fromStdString(object2["name"].GetString()));
         }
         id_groupWindow[group_id]->model->setStringList(id_groupWindow[group_id]->member_list);
-    //} else if (doc["query id"].GetString() == string("id")) {
+        //} else if (doc["query id"].GetString() == string("id")) {
     } else if (doc.HasMember("query id")) {
         ID = doc["query id"].GetUint();
         mainWindow->setID(ID);
@@ -183,12 +182,42 @@ void Manager::my_parse(char *data)
         id_groupWindow[group_id]->id_name[id] = name;
         id_groupWindow[group_id]->member_list.append(QString::fromStdString(name));
         id_groupWindow[group_id]->model->setStringList(id_groupWindow[group_id]->member_list);
-    } else if (doc.HasMember("file transfer conform")){
-        unsigned int id = doc["id"].GetUint();
-        pdebug << id << endl;
+        //文件传输
+    } else if (doc.HasMember("file transfer")){
+        fileTransfer(doc);
     }
     else {
         pdebug << "other" << endl;
+    }
+}
+
+//啊啊
+void delay(int n)
+{
+    QTime dieTime= QTime::currentTime().addSecs(n);
+    while (QTime::currentTime() < dieTime) {
+        //QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+    }
+}
+
+void Manager::fileTransfer(rapidjson::Document &doc)
+{
+    //unsigned int ip = doc["file transfer"].GetUint();
+    string ip = doc["file transfer"].GetString();
+    unsigned int id = doc["id"].GetUint();
+    //if (!ip) {
+    if (ip.empty()) {
+        QMessageBox msgBox;
+        msgBox.setText("对方不在线");
+        msgBox.exec();
+    } else {
+                if (id_chatWindow.count(id)) {
+                    id_chatWindow[id]->raise();
+                } else {
+                    new_chatWindow(id);
+                }
+                //delay(3);
+                id_chatWindow[id]->startFileTransfer(ip);
     }
 }
 
@@ -210,9 +239,11 @@ void Manager::login_successed(void){
     mainWindow = new MainWindow();
     mainWindow->show();
     //双击mainWindow的联系人列表,创建一个ChatWindow
-    connect(mainWindow, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)), this, SLOT(new_chatWindow(QModelIndex)));
+    //connect(mainWindow, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)), this, SLOT(new_chatWindow(QModelIndex)));
+    connect(mainWindow, SIGNAL(double_clicked_on_contacts_list_view(uint)), this, SLOT(new_chatWindow(uint)));
     //双击mainWindow的群列表,创建一个GroupWindow
-    connect(mainWindow, SIGNAL(double_clicked_on_group_list_view(QModelIndex)), this, SLOT(new_groupWindow(QModelIndex)));
+    //connect(mainWindow, SIGNAL(double_clicked_on_group_list_view(QModelIndex)), this, SLOT(new_groupWindow(QModelIndex)));
+    connect(mainWindow, SIGNAL(double_clicked_on_group_list_view(uint)), this, SLOT(new_groupWindow(uint)));
     //请求历史消息
     //修改了
     //ask_for_message();
@@ -236,9 +267,8 @@ void Manager::ask_for_message()
 }
 
 //新建聊天窗口
-void Manager::new_chatWindow(QModelIndex index)
+void Manager::new_chatWindow(unsigned int id)
 {
-    unsigned int id = mainWindow->contacts_name_id[index.data().toString().toStdString()];
     if (id_chatWindow.count(id)) {
         //若已打开 置顶
         id_chatWindow[id]->raise();
@@ -250,8 +280,9 @@ void Manager::new_chatWindow(QModelIndex index)
     chatWindow->contacts_id = id;
     //ChatWindow *chatWindow = new ChatWindow(id);
 
-    connect(this, SIGNAL(chatWindow_open()), chatWindow, SLOT(open()));
+    //connect(this, SIGNAL(chatWindow_open()), chatWindow, SLOT(open()));
     //connect(this, SIGNAL(chatWindow_show_historyMessage()), chatWindow, SLOT(showHistoryMessage()));
+
     //chatWindow关闭后从id_chatWindow中移除
     connect(chatWindow, SIGNAL(close(uint)), this, SLOT(chatWindow_close(uint)));
     chatWindow->setAttribute(Qt::WA_DeleteOnClose);
@@ -263,9 +294,8 @@ void Manager::new_chatWindow(QModelIndex index)
 }
 
 //新建群窗口
-void Manager::new_groupWindow(QModelIndex index)
+void Manager::new_groupWindow(unsigned int id)
 {
-    unsigned int id = mainWindow->group_name_id[index.data().toString().toStdString()];
     //若已打开 置顶
     if (id_groupWindow.count(id)) {
         id_groupWindow[id]->raise();
@@ -278,7 +308,7 @@ void Manager::new_groupWindow(QModelIndex index)
     //connect(this, SIGNAL(GroupWindow_open()), groupWindow, SLOT(open()));
     //connect(this, SIGNAL(groupWindow_show_historyMessage()), groupWindow, SLOT(show_history_message()));
     id_groupWindow[id] = groupWindow;
-    //groupWindow关闭后从id_chatWindow中移除
+    //groupWindow关闭后从id_groupWindow中移除
     connect(groupWindow, SIGNAL(close(uint)), this, SLOT(groupWindow_close(uint)));
     groupWindow->setID(id);
     groupWindow->show();

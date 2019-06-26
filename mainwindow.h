@@ -67,9 +67,16 @@ public:
 
 signals:
     //转发信号至manager 双击联系人列表->创建聊天窗口
-    void double_clicked_on_contacts_list_view(QModelIndex);
+    //void double_clicked_on_contacts_list_view(QModelIndex);
+
+    //转发信号至manager 双击联系人列表->创建聊天窗口
+    void double_clicked_on_contacts_list_view(unsigned int);
+
     //转发信号至manager 双击群列表->创建聊天窗口
-    void double_clicked_on_group_list_view(QModelIndex);
+    //void double_clicked_on_group_list_view(QModelIndex);
+
+    //转发信号至manager 双击群列表->创建聊天窗口
+    void double_clicked_on_group_list_view(unsigned int);
 
 public slots:
     void query_contacts_list(void);
@@ -79,11 +86,17 @@ private slots:
     //从manager获取信息
     //void recv_from_manager(unsigned int id, QString data);
 
+    //查找联系人按钮
     void on_pushButton_searchContacts_clicked();
-
+    //查找群按钮
     void on_pushButton_searchGroup_clicked();
-
+    //创建群按钮
     void on_pushButton_createGroup_clicked();
+    //转发槽函数(联系人) QModelIndex->id;
+    void double_clicked_on_contacts_list_view(QModelIndex);
+    //转发槽函数(群) QModelIndex->id;
+    void double_clicked_on_group_list_view(QModelIndex);
+
 
 private:
     Ui::MainWindow *ui;

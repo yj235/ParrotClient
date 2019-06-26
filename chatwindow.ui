@@ -14,20 +14,34 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
+   <item row="0" column="0" colspan="4">
     <widget class="QTextBrowser" name="textBrowser"/>
    </item>
-   <item row="1" column="0" colspan="2">
+   <item row="1" column="0" colspan="4">
     <widget class="QTextEdit" name="textEdit"/>
    </item>
    <item row="2" column="0">
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="pushButton_fileTransfer">
      <property name="text">
       <string>发送文件</string>
      </property>
     </widget>
    </item>
    <item row="2" column="1">
+    <widget class="QProgressBar" name="progressBar">
+     <property name="value">
+      <number>24</number>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QPushButton" name="pushButton_cancel">
+     <property name="text">
+      <string>取消发送文件</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
     <widget class="QPushButton" name="pushButton_send">
      <property name="text">
       <string>发送</string>

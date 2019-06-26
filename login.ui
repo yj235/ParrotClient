@@ -57,13 +57,20 @@
     </layout>
    </item>
    <item row="2" column="0">
+    <widget class="QLabel" name="label_connectionStatus">
+     <property name="text">
+      <string>连接失败</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_regist_failed">
      <property name="text">
       <string/>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QPushButton" name="pushButton">
      <property name="text">
       <string>登录/使用此用户名注册</string>

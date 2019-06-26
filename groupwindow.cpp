@@ -118,7 +118,7 @@ void GroupWindow::on_pushButton_send_clicked()
     writer.Uint(group_id);
     writer.Key("time");
     QDateTime time = QDateTime::currentDateTime();
-    QString time_str = time.toString("yyyy/M/d h:m:s");
+    QString time_str = time.toString("yyyy-M-d h:m:s");
     writer.String(time_str.toStdString().c_str());
     writer.Key("message");
     writer.String(ui->textEdit->toPlainText().toStdString().c_str());

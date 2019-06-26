@@ -55,9 +55,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(shortcut_close, SIGNAL(activated()), this,SLOT(close()));
 
     //转发信号 双击联系人列表信号 转发至manager信号 由manager创建聊天窗口
-    connect(ui->listView_contacts, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)));
+    //connect(ui->listView_contacts, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(double_clicked_on_contacts_list_view(QModelIndex)));
+    connect(ui->listView_contacts, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(double_clicked_on_contacts_list_view(QModelIndex)));
     //转发信号 双击群列表信号 转发至manager信号 由manager创建群窗口
-    connect(ui->listView_group, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(double_clicked_on_group_list_view(QModelIndex)));
+    //connect(ui->listView_group, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(double_clicked_on_group_list_view(QModelIndex)));
+    connect(ui->listView_group, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(double_clicked_on_group_list_view(QModelIndex)));
 }
 
 MainWindow::~MainWindow()
@@ -149,6 +151,7 @@ void MainWindow::on_pushButton_searchGroup_clicked()
     socket_write(data);
 }
 
+//创建群
 void MainWindow::on_pushButton_createGroup_clicked()
 {
     rapidjson::StringBuffer sb;
@@ -164,4 +167,16 @@ void MainWindow::on_pushButton_createGroup_clicked()
     writer.EndObject();
     string data(sb.GetString());
     socket_write(data);
+}
+
+void MainWindow::double_clicked_on_contacts_list_view(QModelIndex index)
+{
+    unsigned int id = contacts_name_id[index.data().toString().toStdString()];
+    emit double_clicked_on_contacts_list_view(id);
+}
+
+void MainWindow::double_clicked_on_group_list_view(QModelIndex index)
+{
+    unsigned int id = group_name_id[index.data().toString().toStdString()];
+    emit double_clicked_on_group_list_view(id);
 }

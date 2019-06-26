@@ -55,7 +55,8 @@ void Login::recv_from_manager(QString data)
     if ("name exist" == data) {
         ui->label_name_existence->setText("");
     } else if ("name not exist" == data) {
-        ui->label_name_existence->setText(data);
+        ui->label_name_existence->setText("用户名不存在");
+        doRegister = true;
     } else if ("password incorrect" == data) {
         ui->label_password_incorrect->setText(data);
     } else if ("regist failed" == data) {
@@ -70,16 +71,16 @@ void Login::on_pushButton_clicked()
         return;
     }
     if (ui->lineEdit_password->text().isEmpty()){
-        ui->label_password_incorrect->setText("please input password");
+        ui->label_password_incorrect->setText("请输入密码");
         return;
     } else if (ui->lineEdit_password->text().contains(" ")) {
-        ui->label_password_incorrect->setText("space not allowed");
+        ui->label_password_incorrect->setText("密码不符合规则");
         return;
     }
     StringBuffer sb;
     Writer<StringBuffer> writer(sb);
     writer.StartObject();
-    if ("name not exist" == ui->label_name_existence->text()) {
+    if (doRegister) {
         writer.Key("regist");
         writer.StartObject();
         writer.Key("name");
@@ -97,4 +98,9 @@ void Login::on_pushButton_clicked()
     writer.EndObject();
     string data = sb.GetString();
     socket_write(data);
+}
+
+void Login::connected()
+{
+    ui->label_connectionStatus->setText("已连接");
 }

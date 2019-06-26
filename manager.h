@@ -54,10 +54,6 @@ signals:
 public slots:
     //读取来自服务器的信息
     void read(void);
-    //创建聊天窗口
-    void new_chatWindow(QModelIndex);
-    //创建群窗口
-    void new_groupWindow(QModelIndex index);
 
 private slots:
     //聊天窗口关闭处理
@@ -66,6 +62,10 @@ private slots:
     //群窗口关闭处理
     //移除id_groupWindow
     void groupWindow_close(unsigned int groupWindow_id);
+    //创建聊天窗口
+    void new_chatWindow(unsigned int id);
+    //创建群窗口
+    void new_groupWindow(unsigned int id);
 
 private:
     //Login窗口
@@ -82,6 +82,8 @@ private:
     void my_parse(char *data);
     //请求id
     void query_id(void);
+    //文件传输
+    void fileTransfer(rapidjson::Document &doc);
 };
 
 #endif // MANAGER_H

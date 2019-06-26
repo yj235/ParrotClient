@@ -33,11 +33,13 @@ private slots:
     void focus_out(void);
     void recv_from_manager(QString);
     void on_pushButton_clicked();
+    void connected(void);
 
 private:
     Ui::Login *ui;
 
     QShortcut *shortcut_close;
+    bool doRegister = false;
 
     void closeEvent(QCloseEvent *);
 };

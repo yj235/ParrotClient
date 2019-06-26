@@ -1,6 +1,9 @@
 ***task***
 close mainWindow quit
 delete on close
+chatwindow 标题
+取消传送
+ip 类型
 
 ***question***
 ChatWindow Manager MainWindow 三者结构
